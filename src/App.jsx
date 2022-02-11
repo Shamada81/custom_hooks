@@ -1,22 +1,28 @@
 import React, {useRef, useState} from 'react';
-import Hover from "./components/Hover";
-import {useHover} from "./hooks/useHover";
+import useDebounce from "./hooks/useDebounce";
+
 
 function App() {
-    const ref = useRef()
-    const isBlackHover = useHover(ref)
+    const [ value, setValue ] = useState('');
+    const debounceSearch = useDebounce(search, 500);
+
+    function search (query) {
+        fetch(`https://jsonplaceholder.typicode.com/todos?query=${query}`)
+            .then(response => response.json())
+            .then(json => {
+               console.log(json)
+            })
+    }
+
+    const onChange = (e) => {
+        setValue(e.target.value);
+        debounceSearch(e.target.value)
+    }
+
 
     return (
         <div>
-          <Hover />
-            <div
-                ref={ref}
-                ref={ref}
-                style={{width: 300,
-                    height: 300,
-                    background: isBlackHover ? 'blue' : 'black' }}
-            >
-            </div>
+            <input type="text" value={value} onChange={ onChange }/>
         </div>
     );
 }
